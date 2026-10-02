@@ -25,12 +25,6 @@
             overflow-x: hidden;
         }
 
-        @keyframes subtleShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .container {
             background: #9e0303;
             border-radius: 25px;
@@ -77,6 +71,7 @@
             background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
             opacity: 0;
             transition: opacity 0.4s ease;
+            pointer-events: none;
         }
 
         .person-card:hover {
@@ -88,15 +83,10 @@
             opacity: 1;
         }
 
-        .ott { border-left-color: #1919b3; }
-        merle. { border-left-color: #d14f1b; }
-        .otto { border-left-color: #083802; }
+        .ott   { border-left-color: #1919b3; }
+        .merle { border-left-color: #d14f1b; }
+        .otto  { border-left-color: #083802; }
         .klara { border-left-color: #ab0245; }
-
-        .person-card:hover.ott { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
-        .person-card:hover.merle { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
-        .person-card:hover.otto { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
-        .person-card:hover.klara { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
 
         .name-age-header {
             display: flex;
@@ -113,24 +103,22 @@
             font-size: 1.4rem;
             font-weight: 700;
             letter-spacing: 1px;
-            text-shadow: none;
         }
 
-        .ott .person-name { color: #1919b3; }
+        .ott .person-name   { color: #1919b3; }
         .merle .person-name { color: #d14f1b; }
-        .otto .person-name { color: #083802; }
+        .otto .person-name  { color: #083802; }
         .klara .person-name { color: #ab0245; }
 
         .main-age {
             font-family: 'Orbitron', sans-serif;
             font-size: 2rem;
             font-weight: 900;
-            text-shadow: none;
         }
 
-        .ott .main-age { color: #1919b3; }
+        .ott .main-age   { color: #1919b3; }
         .merle .main-age { color: #d14f1b; }
-        .otto .main-age { color: #083802; }
+        .otto .main-age  { color: #083802; }
         .klara .main-age { color: #ab0245; }
 
         .time-details {
@@ -161,7 +149,7 @@
             border-right-color: #1919b3;
         }
         .merle .time-item { 
-            color: #fad000;
+            color: #d14f1b;
             border-right-color: #d14f1b;
         }
         .otto .time-item { 
@@ -173,19 +161,20 @@
             border-right-color: #ab0245;
         }
 
+        /* A short pulse (~0.8 s) once every 10 seconds, then rest.
+           Uses the separate `scale` property so it doesn't block the hover slide. */
         @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.02); }
-            100% { opacity: 1; transform: scale(1); }
+            0%, 8%, 100% { opacity: 1;   scale: 1; }
+            4%           { opacity: 0.8; scale: 1.03; }
         }
 
         .time-item.seconds {
-            animation: pulse 10.5s infinite;
+            animation: pulse 10s ease-in-out infinite;
         }
 
-        .ott .time-item.seconds { box-shadow: 0 0 15px rgba(25, 25, 179, 0.3); }
-        .merle .time-item.seconds { box-shadow: 0 0 15px rgba(250, 208, 0, 0.3); }
-        .otto .time-item.seconds { box-shadow: 0 0 15px rgba(8, 56, 2, 0.3); }
+        .ott .time-item.seconds   { box-shadow: 0 0 15px rgba(25, 25, 179, 0.3); }
+        .merle .time-item.seconds { box-shadow: 0 0 15px rgba(209, 79, 27, 0.3); }
+        .otto .time-item.seconds  { box-shadow: 0 0 15px rgba(8, 56, 2, 0.3); }
         .klara .time-item.seconds { box-shadow: 0 0 15px rgba(171, 2, 69, 0.3); }
 
         /* Tablet styles */
@@ -302,7 +291,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="person-card ott slide-in-left">
+        <div class="person-card ott">
             <div class="name-age-header">
                 <span class="person-name">Ott</span>
                 <span class="main-age" id="ott-years">0</span>
@@ -328,7 +317,7 @@
             </div>
         </div>
 
-        <div class="person-card otto slide-in-left">
+        <div class="person-card otto">
             <div class="name-age-header">
                 <span class="person-name">Otto</span>
                 <span class="main-age" id="otto-years">0</span>
@@ -356,11 +345,11 @@
     </div>
 
     <script>
-        // Birth dates
+        // Birth dates (month is 0-indexed: 0 = January, 11 = December)
         const birthDates = {
-            ott: new Date(1969, 11, 28), // Month is 0-indexed
+            ott:   new Date(1969, 11, 28),
             merle: new Date(1974, 0, 25),
-            otto: new Date(2006, 11, 17),
+            otto:  new Date(2006, 11, 17),
             klara: new Date(2013, 5, 4)
         };
 
@@ -370,26 +359,24 @@
 
         function calculateAge(birthDate) {
             const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            
-            // Calculate years
-            let years = today.getFullYear() - birthDate.getFullYear();
-            if (today.getMonth() < birthDate.getMonth() || 
-                (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+
+            // Full years
+            let years = now.getFullYear() - birthDate.getFullYear();
+            if (now.getMonth() < birthDate.getMonth() ||
+                (now.getMonth() === birthDate.getMonth() && now.getDate() < birthDate.getDate())) {
                 years--;
             }
 
-            // Calculate total time differences
-            const totalMs = now - birthDate;
-            const totalSeconds = Math.floor(totalMs / 1000);
+            // Total elapsed time
+            const totalSeconds = Math.floor((now - birthDate) / 1000);
             const totalMinutes = Math.floor(totalSeconds / 60);
-            const totalHours = Math.floor(totalMinutes / 60);
-            const totalDays = Math.floor(totalHours / 24);
+            const totalHours   = Math.floor(totalMinutes / 60);
+            const totalDays    = Math.floor(totalHours / 24);
 
             return {
-                years: years,
-                days: formatNumber(totalDays),
-                hours: formatNumber(totalHours),
+                years:   years,
+                days:    formatNumber(totalDays),
+                hours:   formatNumber(totalHours),
                 minutes: formatNumber(totalMinutes),
                 seconds: formatNumber(totalSeconds)
             };
@@ -398,33 +385,18 @@
         function updateAges() {
             Object.keys(birthDates).forEach(person => {
                 const age = calculateAge(birthDates[person]);
-                
-                document.getElementById(`${person}-years`).textContent = age.years;
-                document.getElementById(`${person}-days`).textContent = age.days + ' days';
-                document.getElementById(`${person}-hours`).textContent = age.hours + ' hours';
+                document.getElementById(`${person}-years`).textContent   = age.years;
+                document.getElementById(`${person}-days`).textContent    = age.days + ' days';
+                document.getElementById(`${person}-hours`).textContent   = age.hours + ' hours';
                 document.getElementById(`${person}-minutes`).textContent = age.minutes + ' minutes';
                 document.getElementById(`${person}-seconds`).textContent = age.seconds + ' seconds';
             });
         }
 
-        // Slide-in animation function
+        // Cards slide in one after another
         function animateCards() {
-            const cards = document.querySelectorAll('.person-card');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.classList.add('visible');
-                        }, index * 150);
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            });
-
-            cards.forEach(card => {
-                observer.observe(card);
+            document.querySelectorAll('.person-card').forEach((card, index) => {
+                setTimeout(() => card.classList.add('visible'), index * 150);
             });
         }
 
