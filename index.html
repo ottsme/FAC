@@ -52,8 +52,9 @@
 
         html, body { height: 100%; }
 
-        /* Layout: one phone screen; four cards share the height equally,
-           and inside each card the four counters sit in a 2x2 grid. */
+        /* Layout: one phone screen; four cards share the height equally.
+           Each card: name + age, then days | hours, minutes, and the seconds.
+           Text sizes follow the size of the card, so the screen is filled. */
         body {
             font-family: var(--font-data);
             background: var(--color-page);
@@ -62,36 +63,33 @@
             justify-content: center;
             padding:
                 max(8px, env(safe-area-inset-top, 0px))
-                max(10px, env(safe-area-inset-right, 0px))
+                max(8px, env(safe-area-inset-right, 0px))
                 max(8px, env(safe-area-inset-bottom, 0px))
-                max(10px, env(safe-area-inset-left, 0px));
+                max(8px, env(safe-area-inset-left, 0px));
             overflow: hidden;
         }
 
         .container {
             background: var(--color-frame);
             border-radius: 22px;
-            padding: 8px;
+            padding: 7px;
             width: 100%;
-            max-width: 460px;
+            max-width: 520px;
             height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 7px;
         }
 
         .person-card {
             --c: #ffffff;
+            --glow: color-mix(in srgb, var(--c) var(--glow-strength), transparent);
             flex: 1 1 0;
             min-height: 0;
+            container-type: size;
             background: var(--color-card);
             border-radius: 16px;
             border-left: 4px solid var(--c);
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 6px;
             opacity: 0;
             transform: translateX(-40px);
             transition: opacity 0.4s ease, transform 0.4s ease;
@@ -103,73 +101,69 @@
         .person-card.merle { --c: var(--color-merle); }
         .person-card.otto  { --c: var(--color-otto); }
         .person-card.klara { --c: var(--color-klara); }
-        .person-card { --glow: color-mix(in srgb, var(--c) var(--glow-strength), transparent); }
 
-        .name-age-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--color-tile);
-            border-radius: 12px;
-            padding: 2px 12px;
-            color: var(--c);
+        .card-grid {
+            height: 100%;
+            padding: 5cqh 2.2cqw;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1.15fr 1fr 1fr 1.15fr;
+            gap: 4cqh 1.8cqw;
         }
+
+        .tile {
+            background: var(--color-tile);
+            color: var(--c);
+            border-radius: 10px;
+            border-right: 3px solid var(--c);
+            padding: 0 3cqw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2cqw;
+            min-width: 0;
+            white-space: nowrap;
+        }
+        .tile.wide { grid-column: 1 / -1; }
+
+        .name-age-header { border-right: none; }
 
         .person-name {
             font-family: var(--font-display);
             font-weight: 700;
-            font-size: clamp(1.05rem, 5vw, 1.4rem);
+            font-size: min(14cqh, 8cqw);
             letter-spacing: 1px;
         }
 
         .main-age {
             font-family: var(--font-display);
             font-weight: 900;
-            font-size: clamp(1.4rem, 7vw, 2rem);
-            line-height: 1.2;
-            padding: 0 4px;
-            border-radius: 8px;
-        }
-
-        .time-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .time-item {
-            background: var(--color-tile);
-            color: var(--c);
-            border-radius: 10px;
-            border-right: 3px solid var(--c);
-            padding: 3px 8px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            min-width: 0;
+            font-size: min(19cqh, 11cqw);
+            line-height: 1;
         }
 
         .unit {
-            font-size: 0.6rem;
-            letter-spacing: 0.14em;
+            font-size: min(8cqh, 3.6cqw);
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             opacity: 0.75;
-            line-height: 1.3;
         }
 
         .value {
             font-weight: 700;
-            font-size: clamp(0.85rem, 4.1vw, 1.15rem);
+            font-size: min(13cqh, 6.6cqw);
             font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-            line-height: 1.25;
+            line-height: 1;
         }
+
+        .seconds { justify-content: flex-end; }
+        .seconds .value { font-size: min(16cqh, 9.5cqw); }
 
         /* Pulse: the box flips to the person's colour, grows and glows for ~1.2 s */
         @keyframes pulse {
             0%   { scale: 1;    background: var(--color-tile); color: var(--c); box-shadow: 0 0 0 transparent; }
-            18%  { scale: 1.08; background: var(--c); color: var(--color-tile); box-shadow: 0 0 22px 4px var(--glow); }
-            55%  { scale: 1.04; background: var(--c); color: var(--color-tile); box-shadow: 0 0 14px 2px var(--glow); }
+            18%  { scale: 1.06; background: var(--c); color: var(--color-tile); box-shadow: 0 0 22px 4px var(--glow); }
+            55%  { scale: 1.03; background: var(--c); color: var(--color-tile); box-shadow: 0 0 14px 2px var(--glow); }
             100% { scale: 1;    background: var(--color-tile); color: var(--c); box-shadow: 0 0 0 transparent; }
         }
         .pulse {
@@ -205,14 +199,36 @@
         const TIME_ZONE = 'Europe/Tallinn';
         // =========================================================
 
+        // Leap seconds: dates (UTC) whose last minute had 61 seconds.
+        // Source: IERS list, as shipped in the IANA tz database (27 entries, last 2016-12-31).
+        // If IERS ever announces a new one, add its date here.
+        const LEAP_SECOND_DAYS = [
+            '1972-06-30', '1972-12-31', '1973-12-31', '1974-12-31', '1975-12-31', '1976-12-31',
+            '1977-12-31', '1978-12-31', '1979-12-31', '1981-06-30', '1982-06-30', '1983-06-30',
+            '1985-06-30', '1987-12-31', '1989-12-31', '1990-12-31', '1992-06-30', '1993-06-30',
+            '1994-06-30', '1995-12-31', '1997-06-30', '1998-12-31', '2005-12-31', '2008-12-31',
+            '2012-06-30', '2015-06-30', '2016-12-31'
+        ];
+
         // How the counters work:
-        //  - seconds, minutes, hours: real time elapsed since the birth moment
+        //  - seconds, minutes, hours: real time elapsed since the birth moment,
+        //    leap seconds included (so each person's minutes turn over at a slightly
+        //    different second of the clock)
         //  - days:  go up every day at the birth clock time (Tallinn clock)
         //  - years: go up on the birthday, at the birth clock time (Tallinn clock)
         // All of this uses Tallinn time, whatever time zone the phone is in.
 
-        // Units that can pulse at :00, highest first
+        // Pulses: each person's seconds pulse every 30 of their own seconds;
+        // when a bigger unit changes, only the biggest one that changed pulses.
         const LEVELS = ['years', 'days', 'hours', 'minutes'];
+
+        const now = () => Date.now();
+
+        // Instant just after each leap second (00:00:00 UTC of the next day)
+        const LEAP_INSTANTS = LEAP_SECOND_DAYS.map(d => {
+            const [y, m, day] = d.split('-').map(Number);
+            return Date.UTC(y, m - 1, day + 1);
+        });
 
         const wallFormat = new Intl.DateTimeFormat('en-GB', {
             timeZone: TIME_ZONE, hourCycle: 'h23',
@@ -262,8 +278,9 @@
             let days = Math.round((Date.UTC(w.y, w.mo - 1, w.d) - Date.UTC(b.y, b.mo - 1, b.d)) / 86400000);
             if (beforeBirthTime) days--;
 
-            // Real elapsed time
-            const seconds = Math.floor((t - b.instant) / 1000);
+            // Real elapsed time, including leap seconds since birth
+            const leaps = LEAP_INSTANTS.filter(L => L > b.instant && L <= t).length;
+            const seconds = Math.floor((t - b.instant) / 1000) + leaps;
             return {
                 years,
                 days,
@@ -280,15 +297,15 @@
             const card = document.createElement('section');
             card.className = `person-card ${p.id}` + (i % 2 ? ' from-right' : '');
             card.innerHTML = `
-                <div class="name-age-header">
-                    <span class="person-name">${p.name}</span>
-                    <span class="main-age" data-u="years">0</span>
-                </div>
-                <div class="time-details">
-                    <div class="time-item" data-u="days"><span class="unit">days</span><span class="value">0</span></div>
-                    <div class="time-item" data-u="hours"><span class="unit">hours</span><span class="value">0</span></div>
-                    <div class="time-item" data-u="minutes"><span class="unit">minutes</span><span class="value">0</span></div>
-                    <div class="time-item" data-u="seconds"><span class="unit">seconds</span><span class="value">0</span></div>
+                <div class="card-grid">
+                    <div class="tile wide name-age-header">
+                        <span class="person-name">${p.name}</span>
+                        <span class="main-age" data-u="years">0</span>
+                    </div>
+                    <div class="tile" data-u="days"><span class="unit">days</span><span class="value">0</span></div>
+                    <div class="tile" data-u="hours"><span class="unit">hrs</span><span class="value">0</span></div>
+                    <div class="tile wide" data-u="minutes"><span class="unit">mins</span><span class="value">0</span></div>
+                    <div class="tile wide seconds" data-u="seconds"><span class="value">0</span></div>
                 </div>`;
             container.appendChild(card);
             els[p.id] = {};
@@ -305,12 +322,11 @@
         }
         container.addEventListener('animationend', e => e.target.classList.remove('pulse'));
 
-        // Pulse rule: at :30 the seconds pulse; at :00 only the highest unit that changed.
-        // A pulse fires only if the boundary was crossed within the last 2 seconds,
+        // A pulse fires only if the change happened within the last 2 seconds,
         // so waking the phone never triggers a stale pulse.
         const prev = {};
         function update() {
-            const t = Date.now();
+            const t = now();
             people.forEach(p => {
                 const a = calculateAge(p.birth, t);
                 const e = els[p.id];
@@ -323,19 +339,24 @@
                 const b = prev[p.id];
                 if (b) {
                     const step = a.seconds - b.seconds;
-                    if (step >= 1 && step <= 2 && Math.floor(a.seconds / 30) !== Math.floor(b.seconds / 30)) {
-                        const level = LEVELS.find(u => a[u] !== b[u]) || 'seconds';
-                        pulse(p.id, level);
+                    if (step >= 1 && step <= 2) {
+                        let level = null;
+                        if (a.years !== b.years)      level = 'years';
+                        else if (a.days !== b.days)   level = 'days';
+                        else if (Math.floor(a.seconds / 30) !== Math.floor(b.seconds / 30)) {
+                            level = LEVELS.find(u => a[u] !== b[u]) || 'seconds';
+                        }
+                        if (level) pulse(p.id, level);
                     }
                 }
                 prev[p.id] = a;
             });
         }
 
-        // Tick just after each full second, so :00 and :30 land on time
+        // Tick just after each full second of the clock
         function loop() {
             update();
-            setTimeout(loop, 1000 - (Date.now() % 1000) + 20);
+            setTimeout(loop, 1000 - (now() % 1000) + 20);
         }
 
         document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
