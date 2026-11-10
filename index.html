@@ -56,7 +56,8 @@
 
         /* Layout: one phone screen; four cards share the height equally.
            Each card: name + age, then days | hours, minutes, and the seconds.
-           Text sizes follow the size of the card, so the screen is filled. */
+           Text sizes follow the size of the card, and frame sizes follow the screen
+           width (vw), so the screen is always filled whatever the zoom setting. */
         body {
             font-family: var(--font-data);
             background: var(--color-page);
@@ -64,23 +65,22 @@
             display: flex;
             justify-content: center;
             padding:
-                max(8px, env(safe-area-inset-top, 0px))
-                max(8px, env(safe-area-inset-right, 0px))
-                max(8px, env(safe-area-inset-bottom, 0px))
-                max(8px, env(safe-area-inset-left, 0px));
+                max(2vw, env(safe-area-inset-top, 0px))
+                max(2vw, env(safe-area-inset-right, 0px))
+                max(2vw, env(safe-area-inset-bottom, 0px))
+                max(2vw, env(safe-area-inset-left, 0px));
             overflow: hidden;
         }
 
         .container {
             background: var(--color-frame);
-            border-radius: 22px;
-            padding: 7px;
+            border-radius: 5.7vw;
+            padding: 1.8vw;
             width: 100%;
-            max-width: 520px;
             height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 7px;
+            gap: 1.8vw;
         }
 
         .person-card {
@@ -90,13 +90,13 @@
             min-height: 0;
             container-type: size;
             background: var(--color-card);
-            border-radius: 16px;
-            border-left: 4px solid var(--c);
+            border-radius: 4.2vw;
+            border-left: 1vw solid var(--c);
             opacity: 0;
-            transform: translateX(-40px);
+            transform: translateX(-10vw);
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
-        .person-card.from-right { transform: translateX(40px); }
+        .person-card.from-right { transform: translateX(10vw); }
         .person-card.visible    { opacity: 1; transform: none; }
 
         .person-card.ott   { --c: var(--color-ott); }
@@ -116,8 +116,8 @@
         .tile {
             background: var(--color-tile);
             color: var(--c);
-            border-radius: 10px;
-            border-right: 3px solid var(--c);
+            border-radius: 2.6vw;
+            border-right: 0.8vw solid var(--c);
             padding: 0 3cqw;
             display: flex;
             align-items: center;
@@ -134,7 +134,7 @@
             font-family: var(--font-display);
             font-weight: 700;
             font-size: min(14cqh, 8cqw);
-            letter-spacing: 1px;
+            letter-spacing: 0.05em;
         }
 
         .main-age {
@@ -174,7 +174,7 @@
         .tile.soon { background: color-mix(in srgb, var(--c) var(--tint-week), var(--color-tile)); }
         .tile.near {
             background: color-mix(in srgb, var(--c) var(--tint-day), var(--color-tile));
-            box-shadow: inset 0 0 0 2px var(--c);
+            box-shadow: inset 0 0 0 0.6vw var(--c);
         }
         /* Round number reached: the box is in the person's colour for 24 hours */
         .tile.reached { background: var(--c); color: var(--color-tile); }
@@ -182,7 +182,7 @@
         /* Pulse at the very moment a round number is reached */
         @keyframes pulse {
             0%   { scale: 1;    box-shadow: 0 0 0 transparent; }
-            25%  { scale: 1.07; box-shadow: 0 0 24px 5px var(--glow); }
+            25%  { scale: 1.07; box-shadow: 0 0 6vw 1.3vw var(--glow); }
             100% { scale: 1;    box-shadow: 0 0 0 transparent; }
         }
         .pulse {
